@@ -1,7 +1,7 @@
 const crypto = require("crypto")
 const axios = require("axios")
 
-const url = 'https://dm.aliyuncs.com/'
+const url = "https://dm.aliyuncs.com/"
 
 module.exports = function (config, cb) {
   config = config || {}
@@ -11,34 +11,34 @@ module.exports = function (config, cb) {
         errorMsg = []
 
   if (!config.accessKeyID) {
-    errorMsg.push('accessKeyID required')
+    errorMsg.push("accessKeyID required")
   }
   if (!config.accessKeySecret) {
-    errorMsg.push('accessKeySecret required')
+    errorMsg.push("accessKeySecret required")
   }
   if (!config.accountName) {
-    errorMsg.push('accountName required')
+    errorMsg.push("accountName required")
   }
 
   let param = {
     AccessKeyId: config.accessKeyID,
-    Format: 'JSON',
+    Format: "JSON",
     AccountName: config.accountName,
-    AddressType: typeof config.addressType == 'undefined' ? 0 : config.addressType,
-    SignatureMethod: 'HMAC-SHA1',
+    AddressType: typeof config.addressType == "undefined" ? 0 : config.addressType,
+    SignatureMethod: "HMAC-SHA1",
     SignatureNonce: nonce,
-    SignatureVersion: '1.0',
+    SignatureVersion: "1.0",
     TemplateCode: config.templateCode,
     Timestamp: date.toISOString(),
-    Version: '2015-11-23'
+    Version: "2015-11-23"
   }
   switch(config.action) {
-    case 'single': {
+    case "single": {
       if (!config.toAddress) {
-        errorMsg.push('toAddress required')
+        errorMsg.push("toAddress required")
       }
 
-      param.Action = 'single'
+      param.Action = "single"
       param.ReplyToAddress = !!config.replyToAddress
       param.ToAddress = config.toAddress
 
@@ -56,15 +56,15 @@ module.exports = function (config, cb) {
       }
       break
     }
-    case 'batch': {
+    case "batch": {
       if (!config.templateName) {
-        errorMsg.push('templateName required')
+        errorMsg.push("templateName required")
       }
       if (!config.receiversName) {
-        errorMsg.push('receiversName required')
+        errorMsg.push("receiversName required")
       }
 
-      param.Action = 'batch'
+      param.Action = "batch"
       param.TemplateName = config.templateName
       param.ReceiversName = config.receiversName
       
@@ -74,39 +74,39 @@ module.exports = function (config, cb) {
       break
     }
     default: {
-      cb('error action', null)
+      cb("error action", null)
       break
     }
   }
 
   if (errorMsg.length) {
-    return cb(errorMsg.join(','))
+    return cb(errorMsg.join(","))
   }
   
   var signStr = []
   for (var i in param) {
-    signStr.push(encodeURIComponent(i) + '=' + encodeURIComponent(param[i]))
+    signStr.push(encodeURIComponent(i) + "=" + encodeURIComponent(param[i]))
   }
   signStr.sort()
-  signStr = signStr.join('&')
-  signStr = 'POST&%2F&' + encodeURIComponent(signStr)
-  const sign = crypto.createHmac("sha1", config.accessKeySecret + '&')
+  signStr = signStr.join("&")
+  signStr = "POST&%2F&" + encodeURIComponent(signStr)
+  const sign = crypto.createHmac("sha1", config.accessKeySecret + "&")
     .update(signStr)
-    .digest('base64')
+    .digest("base64")
   const signature = encodeURIComponent(sign)
-  var reqBody = ['Signature=' + signature]
+  var reqBody = ["Signature=" + signature]
   for (var i in param) {
-    reqBody.push(i + '=' + param[i])
+    reqBody.push(i + "=" + param[i])
   }
-  reqBody = reqBody.join('&')
+  reqBody = reqBody.join("&")
 
   axios({
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
+      "Content-Type": "application/x-www-form-urlencoded"
     },
     uri: url,
     body: reqBody,
-    method: 'POST'
+    method: "POST"
   }, function (err, res, body) {
     cb(err, body)
   })
