@@ -11,13 +11,13 @@ module.exports = function rebuild(config, cb) {
         errorMsg = [];
 
   if (!config.accessKeyID) {
-    errorMsg.push("accessKeyID required")
+    errorMsg.push("accessKeyID required");
   };
   if (!config.accessKeySecret) {
-    errorMsg.push("accessKeySecret required")
+    errorMsg.push("accessKeySecret required");
   };
   if (!config.accountName) {
-    errorMsg.push("accountName required")
+    errorMsg.push("accountName required");
   };
 
   let param = {
@@ -35,7 +35,7 @@ module.exports = function rebuild(config, cb) {
   switch(config.action) {
     case "single": {
       if (!config.toAddress) {
-        errorMsg.push("toAddress required")
+        errorMsg.push("toAddress required");
       };
 
       param.Action = "single";
@@ -58,10 +58,10 @@ module.exports = function rebuild(config, cb) {
     }
     case "batch": {
       if (!config.templateName) {
-        errorMsg.push("templateName required")
+        errorMsg.push("templateName required");
       };
       if (!config.receiversName) {
-        errorMsg.push("receiversName required")
+        errorMsg.push("receiversName required");
       };
 
       param.Action = "batch";
@@ -75,7 +75,7 @@ module.exports = function rebuild(config, cb) {
     }
     default: {
       cb("error action", null);
-      break
+      break;
     }
   };
 
