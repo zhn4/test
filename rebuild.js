@@ -1,24 +1,24 @@
-const crypto = require("crypto")
-const axios = require("axios")
+const crypto = require("crypto");
+const axios = require("axios");
 
-const url = "https://dm.aliyuncs.com/"
+const url = "https://dm.aliyuncs.com/";
 
-module.exports = function (config, cb) {
-  config = config || {}
+module.exports = function rebuild(config, cb) {
+  config = config || {};
 
   const nonce = Date.now(),
         date = new Date(),
-        errorMsg = []
+        errorMsg = [];
 
   if (!config.accessKeyID) {
     errorMsg.push("accessKeyID required")
-  }
+  };
   if (!config.accessKeySecret) {
     errorMsg.push("accessKeySecret required")
-  }
+  };
   if (!config.accountName) {
     errorMsg.push("accountName required")
-  }
+  };
 
   let param = {
     AccessKeyId: config.accessKeyID,
@@ -31,74 +31,74 @@ module.exports = function (config, cb) {
     TemplateCode: config.templateCode,
     Timestamp: date.toISOString(),
     Version: "2015-11-23"
-  }
+  };
   switch(config.action) {
     case "single": {
       if (!config.toAddress) {
         errorMsg.push("toAddress required")
-      }
+      };
 
-      param.Action = "single"
-      param.ReplyToAddress = !!config.replyToAddress
-      param.ToAddress = config.toAddress
+      param.Action = "single";
+      param.ReplyToAddress = !!config.replyToAddress;
+      param.ToAddress = config.toAddress;
 
       if (config.fromAlias) {
-        param.FromAlias = config.fromAlias
-      }
+        param.FromAlias = config.fromAlias;
+      };
       if (config.subject) {
-        param.Subject = config.subject
-      }
+        param.Subject = config.subject;
+      };
       if (config.htmlBody) {
-        param.HtmlBody = config.htmlBody
-      }
+        param.HtmlBody = config.htmlBody;
+      };
       if (config.textBody) {
-        param.TextBody = config.textBody
-      }
-      break
+        param.TextBody = config.textBody;
+      };
+      break;
     }
     case "batch": {
       if (!config.templateName) {
         errorMsg.push("templateName required")
-      }
+      };
       if (!config.receiversName) {
         errorMsg.push("receiversName required")
-      }
+      };
 
-      param.Action = "batch"
-      param.TemplateName = config.templateName
-      param.ReceiversName = config.receiversName
+      param.Action = "batch";
+      param.TemplateName = config.templateName;
+      param.ReceiversName = config.receiversName;
       
       if (config.tagName) {
-        param.TagName = config.tagName
-      }
-      break
+        param.TagName = config.tagName;
+      };
+      break;
     }
     default: {
-      cb("error action", null)
+      cb("error action", null);
       break
     }
-  }
+  };
 
   if (errorMsg.length) {
-    return cb(errorMsg.join(","))
+    return cb(errorMsg.join(","));
   }
   
-  var signStr = []
+  var signStr = [];
   for (var i in param) {
-    signStr.push(encodeURIComponent(i) + "=" + encodeURIComponent(param[i]))
-  }
-  signStr.sort()
-  signStr = signStr.join("&")
-  signStr = "POST&%2F&" + encodeURIComponent(signStr)
+    signStr.push(encodeURIComponent(i) + "=" + encodeURIComponent(param[i]));
+  };
+  signStr.sort();
+  signStr = signStr.join("&");
+  signStr = "POST&%2F&" + encodeURIComponent(signStr);
   const sign = crypto.createHmac("sha1", config.accessKeySecret + "&")
     .update(signStr)
-    .digest("base64")
-  const signature = encodeURIComponent(sign)
+    .digest("base64");
+  const signature = encodeURIComponent(sign);
   var reqBody = ["Signature=" + signature]
   for (var i in param) {
-    reqBody.push(i + "=" + param[i])
-  }
-  reqBody = reqBody.join("&")
+    reqBody.push(i + "=" + param[i]);
+  };
+  reqBody = reqBody.join("&");
 
   axios({
     headers: {
@@ -108,7 +108,7 @@ module.exports = function (config, cb) {
     body: reqBody,
     method: "POST"
   }, function (err, res, body) {
-    cb(err, body)
-  })
+    cb(err, body);
+  });
 
-}
+};
