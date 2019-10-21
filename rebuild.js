@@ -85,7 +85,7 @@ module.exports = function rebuild(config, cb) {
   
   let signStr = [];
   for (let i in param) {
-    signStr.push(encodeURIComponent(i) + "=" + encodeURIComponent(param[i]));
+    signStr.push(''.concat(encodeURIComponent(i), "=", encodeURIComponent(param[i])));
   };
   signStr.sort();
   signStr = signStr.join("&");
@@ -94,9 +94,9 @@ module.exports = function rebuild(config, cb) {
     .update(signStr)
     .digest("base64");
   const signature = encodeURIComponent(sign);
-  let reqBody = ["Signature=" + signature]
+  let reqBody = ["Signature=" + signature];
   for (let i in param) {
-    reqBody.push(i + "=" + param[i]);
+    reqBody.push(''.concat(i, "=", param[i]));
   };
   reqBody = reqBody.join("&");
 
