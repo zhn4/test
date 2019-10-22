@@ -97,7 +97,7 @@ module.exports.default = function(config, cb) {
     default:
       cb("error action", null);
       break;
-  };
+  }
 
   if (errorMsg.length) {
     return cb(errorMsg.join(","));
