@@ -3,6 +3,29 @@ const axios = require("axios");
 
 const url = "https://dm.aliyuncs.com/";
 
+function request(url, reqBody) {
+  return new Promise((resolve, reject) => {
+    axios({
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      uri: url,
+      body: reqBody,
+      method: "POST"
+    })
+    .then((res) => {
+      if(res.data.success) {
+        resolve(res);
+      }else {
+        reject(res);
+      }
+    })
+    .catch((err) => {
+      reject(err);
+    });
+  })
+};
+
 module.exports.default = function(config, cb) {
   config = config || {};
 
@@ -97,25 +120,6 @@ module.exports.default = function(config, cb) {
   };
   reqBody = reqBody.join("&");
 
-  request(url, reqBody)
+  request(url, reqBody);
 
-};
-
-function request(url, reqBody) {
-  return new Promise((resolve, reject) => {
-    axios({
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      uri: url,
-      body: reqBody,
-      method: "POST"
-    })
-    .then((res) => {
-      resolve(res);
-    })
-    .catch((err) => {
-      reject(err, body);
-    });
-  })
 };
