@@ -105,7 +105,8 @@ module.exports = function(config, cb) {
   
   let signStr = []
   for (let i in param) {
-    signStr.push(''.concat(encodeURIComponent(i), '=', encodeURIComponent(param[i])))
+    let str = encodeURIComponent(i) + '=' + encodeURIComponent(param[i])
+    signStr.push(str)
   }
   signStr.sort()
   signStr = signStr.join('&')
@@ -116,7 +117,8 @@ module.exports = function(config, cb) {
   const signature = encodeURIComponent(sign)
   let reqBody = ['Signature=' + signature]
   for (let i in param) {
-    reqBody.push(''.concat(i, '=', param[i]))
+    let str = i + '=' + param[i]
+    reqBody.push(str)
   }
   reqBody = reqBody.join('&')
 
