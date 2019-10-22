@@ -3,7 +3,7 @@ const axios = require("axios");
 
 const url = "https://dm.aliyuncs.com/";
 
-module.exports = function rebuild(config, cb) {
+module.exports.default = function(config, cb) {
   config = config || {};
 
   const nonce = Date.now(),
@@ -97,15 +97,25 @@ module.exports = function rebuild(config, cb) {
   };
   reqBody = reqBody.join("&");
 
-  axios({
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    uri: url,
-    body: reqBody,
-    method: "POST"
-  }, function (err, res, body) {
-    cb(err, body);
-  });
+  request(url, reqBody)
 
+};
+
+function request(url, reqBody) {
+  return new Promise((resolve, reject) => {
+    axios({
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      uri: url,
+      body: reqBody,
+      method: "POST"
+    })
+    .then((res) => {
+      resolve(res);
+    })
+    .catch((err) => {
+      reject(err, body);
+    });
+  })
 };
