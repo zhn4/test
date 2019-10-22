@@ -35,13 +35,13 @@ module.exports.default = function(config, cb) {
 
   if (!config.accessKeyID) {
     errorMsg.push("accessKeyID required");
-  };
+  }
   if (!config.accessKeySecret) {
     errorMsg.push("accessKeySecret required");
-  };
+  }
   if (!config.accountName) {
     errorMsg.push("accountName required");
-  };
+  }
 
   let param = {
     AccessKeyId: config.accessKeyID,
@@ -59,7 +59,7 @@ module.exports.default = function(config, cb) {
     case "single":
       if (!config.toAddress) {
         errorMsg.push("toAddress required");
-      };
+      }
 
       param.Action = "single";
       param.ReplyToAddress = !!config.replyToAddress;
@@ -67,24 +67,24 @@ module.exports.default = function(config, cb) {
 
       if (config.fromAlias) {
         param.FromAlias = config.fromAlias;
-      };
+      }
       if (config.subject) {
         param.Subject = config.subject;
-      };
+      }
       if (config.htmlBody) {
         param.HtmlBody = config.htmlBody;
-      };
+      }
       if (config.textBody) {
         param.TextBody = config.textBody;
-      };
+      }
       break;
     case "batch":
       if (!config.templateName) {
         errorMsg.push("templateName required");
-      };
+      }
       if (!config.receiversName) {
         errorMsg.push("receiversName required");
-      };
+      }
 
       param.Action = "batch";
       param.TemplateName = config.templateName;
@@ -92,7 +92,7 @@ module.exports.default = function(config, cb) {
       
       if (config.tagName) {
         param.TagName = config.tagName;
-      };
+      }
       break;
     default:
       cb("error action", null);
