@@ -33,7 +33,7 @@ module.exports = function rebuild(config, cb) {
     Version: "2015-11-23"
   };
   switch(config.action) {
-    case "single": {
+    case "single":
       if (!config.toAddress) {
         errorMsg.push("toAddress required");
       };
@@ -55,8 +55,7 @@ module.exports = function rebuild(config, cb) {
         param.TextBody = config.textBody;
       };
       break;
-    }
-    case "batch": {
+    case "batch":
       if (!config.templateName) {
         errorMsg.push("templateName required");
       };
@@ -72,11 +71,9 @@ module.exports = function rebuild(config, cb) {
         param.TagName = config.tagName;
       };
       break;
-    }
-    default: {
+    default:
       cb("error action", null);
       break;
-    }
   };
 
   if (errorMsg.length) {
@@ -85,7 +82,7 @@ module.exports = function rebuild(config, cb) {
   
   let signStr = [];
   for (let i in param) {
-    signStr.push(''.concat(encodeURIComponent(i), "=", encodeURIComponent(param[i])));
+    signStr.push("".concat(encodeURIComponent(i), "=", encodeURIComponent(param[i])));
   };
   signStr.sort();
   signStr = signStr.join("&");
@@ -96,7 +93,7 @@ module.exports = function rebuild(config, cb) {
   const signature = encodeURIComponent(sign);
   let reqBody = ["Signature=" + signature];
   for (let i in param) {
-    reqBody.push(''.concat(i, "=", param[i]));
+    reqBody.push("".concat(i, "=", param[i]));
   };
   reqBody = reqBody.join("&");
 
