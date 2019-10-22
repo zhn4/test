@@ -23,7 +23,7 @@ function request(url, reqBody) {
     .catch((err) => {
       reject(err);
     });
-  })
+  });
 };
 
 module.exports.default = function(config, cb) {
@@ -106,7 +106,7 @@ module.exports.default = function(config, cb) {
   let signStr = [];
   for (let i in param) {
     signStr.push("".concat(encodeURIComponent(i), "=", encodeURIComponent(param[i])));
-  };
+  }
   signStr.sort();
   signStr = signStr.join("&");
   signStr = "POST&%2F&" + encodeURIComponent(signStr);
@@ -117,7 +117,7 @@ module.exports.default = function(config, cb) {
   let reqBody = ["Signature=" + signature];
   for (let i in param) {
     reqBody.push("".concat(i, "=", param[i]));
-  };
+  }
   reqBody = reqBody.join("&");
 
   request(url, reqBody);
