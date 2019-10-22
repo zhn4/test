@@ -24,7 +24,7 @@ function request(url, reqBody) {
       reject(err);
     });
   });
-};
+}
 
 module.exports.default = function(config, cb) {
   config = config || {};
@@ -122,4 +122,4 @@ module.exports.default = function(config, cb) {
 
   request(url, reqBody);
 
-};
+}
