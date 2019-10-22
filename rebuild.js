@@ -122,4 +122,4 @@ module.exports.default = function(config, cb) {
 
   request(url, reqBody);
 
-}
+};
