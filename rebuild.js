@@ -26,7 +26,7 @@ function request(url, reqBody) {
   })
 }
 
-module.exports.default = function(config, cb) {
+module.exports = function(config, cb) {
   config = config || {}
 
   const nonce = Date.now(),
