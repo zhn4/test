@@ -2,7 +2,7 @@ const crypto = require('crypto')
 const axios = require('axios')
 const qs = require('qs')
 
-const url = 'https://dm.aliyuncs.com/'
+const requestUrl = 'https://dm.aliyuncs.com/'
 
 module.exports = function (config, cb) {
   const nonce = Date.now()// 当前时间距离时间零点（1970年1月1日 00:00:00 UTC）的毫秒数
@@ -103,7 +103,7 @@ module.exports = function (config, cb) {
 
   axios({
     method: 'POST',
-    url: url,
+    url: requestUrl,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
