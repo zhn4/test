@@ -1,5 +1,6 @@
 const crypto = require('crypto')
-const request = require('request')
+const axios = require('axios')
+const qs = require('qs')
 
 const url = 'https://dm.aliyuncs.com/'
 
@@ -95,22 +96,20 @@ module.exports = function (config, cb) {
 
   const signature = encodeURIComponent(sign)// 转换url编码
 
-  let reqBody = ['Signature=' + signature]// 请求部分-签名
-
-  for (let i in param) {// 参数的key-value添加到，请求部分-请求参数
-    reqBody.push(i + '=' + param[i])
+  let reqBody = {// 需要提交的数据部分
+    Signature: signature,
+    ...param
   }
 
-  reqBody = reqBody.join('&')// 请求参数字符串拼接
-
-  request({
+  axios({
+    method: 'POST',
+    url: url,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
-    uri: url,
-    body: reqBody,
-    method: 'POST'
-  }, function (err, res, body) {
-    cb(err, body)
+    data: qs.stringify(reqBody)// qs库转化格式
+  })
+  .catch(function (error) {
+    cb(error)
   })
 }
