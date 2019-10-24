@@ -1,49 +1,27 @@
 const crypto = require('crypto')
-const axios = require('axios')
+const request = require('request')
 
 const url = 'https://dm.aliyuncs.com/'
 
-function request(url, reqBody) {
-  return new Promise((resolve, reject) => {
-    axios({
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      uri: url,
-      body: reqBody,
-      method: 'POST'
-    })
-    .then((res) => {
-      if(res.data.success) {
-        resolve(res)
-      }else {
-        reject(res)
-      }
-    })
-    .catch((err) => {
-      reject(err)
-    })
-  })
-}
-
-module.exports = function(config, cb) {
-  config = config || {}
-
-  const nonce = Date.now(),
-        date = new Date(),
-        errorMsg = []
+module.exports = function (config, cb) {
+  const nonce = Date.now()// 当前时间距离时间零点（1970年1月1日 00:00:00 UTC）的毫秒数
+  const date = new Date()// 当前时间
+  const errorMsg = []// 错误信息数组
+  config = config || {}// 传入配置
 
   if (!config.accessKeyID) {
     errorMsg.push('accessKeyID required')
   }
+
   if (!config.accessKeySecret) {
     errorMsg.push('accessKeySecret required')
   }
+
   if (!config.accountName) {
     errorMsg.push('accountName required')
   }
 
-  let param = {
+  let param = {// 参数对象
     AccessKeyId: config.accessKeyID,
     Format: 'JSON',
     AccountName: config.accountName,
@@ -55,15 +33,16 @@ module.exports = function(config, cb) {
     Timestamp: date.toISOString(),
     Version: '2015-11-23'
   }
-  switch(config.action) {
-    case 'single':
-      if (!config.toAddress) {
-        errorMsg.push('toAddress required')
-      }
 
+  switch(config.action) {
+    case 'single':// 单独
       param.Action = 'single'
       param.ReplyToAddress = !!config.replyToAddress
       param.ToAddress = config.toAddress
+
+      if (!config.toAddress) {
+        errorMsg.push('toAddress required')
+      }
 
       if (config.fromAlias) {
         param.FromAlias = config.fromAlias
@@ -78,17 +57,17 @@ module.exports = function(config, cb) {
         param.TextBody = config.textBody
       }
       break
-    case 'batch':
+    case 'batch':// 批量
+      param.Action = 'batch'
+      param.TemplateName = config.templateName
+      param.ReceiversName = config.receiversName
+
       if (!config.templateName) {
         errorMsg.push('templateName required')
       }
       if (!config.receiversName) {
         errorMsg.push('receiversName required')
       }
-
-      param.Action = 'batch'
-      param.TemplateName = config.templateName
-      param.ReceiversName = config.receiversName
       
       if (config.tagName) {
         param.TagName = config.tagName
@@ -96,32 +75,42 @@ module.exports = function(config, cb) {
       break
     default:
       cb('error action', null)
-      break
   }
 
   if (errorMsg.length) {
     return cb(errorMsg.join(','))
   }
-  
+
   let signStr = []
-  for (let i in param) {
-    let str = encodeURIComponent(i) + '=' + encodeURIComponent(param[i])
-    signStr.push(str)
+  for (let i in param) {// 各项参数转换url编码push到signStr数组
+    signStr.push(encodeURIComponent(i) + '=' + encodeURIComponent(param[i]))
   }
-  signStr.sort()
-  signStr = signStr.join('&')
-  signStr = 'POST&%2F&' + encodeURIComponent(signStr)
-  const sign = crypto.createHmac('sha1', config.accessKeySecret + '&')
-    .update(signStr)
-    .digest('base64')
-  const signature = encodeURIComponent(sign)
-  let reqBody = ['Signature=' + signature]
-  for (let i in param) {
-    let str = i + '=' + param[i]
-    reqBody.push(str)
+  signStr.sort()// 排序
+  signStr = signStr.join('&')// 拼接
+  signStr = 'POST&%2F&' + encodeURIComponent(signStr)// 拼接
+
+  const sign = crypto.createHmac('sha1', config.accessKeySecret + '&')// 加密
+    .update(signStr)// 转换utf-8编码
+    .digest('base64')// base64的摘要
+
+  const signature = encodeURIComponent(sign)// 转换url编码
+
+  let reqBody = ['Signature=' + signature]// 请求部分-签名
+
+  for (let i in param) {// 参数的key-value添加到，请求部分-请求参数
+    reqBody.push(i + '=' + param[i])
   }
-  reqBody = reqBody.join('&')
 
-  request(url, reqBody)
+  reqBody = reqBody.join('&')// 请求参数字符串拼接
 
+  request({
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    uri: url,
+    body: reqBody,
+    method: 'POST'
+  }, function (err, res, body) {
+    cb(err, body)
+  })
 }
