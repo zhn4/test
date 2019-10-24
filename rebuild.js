@@ -4,7 +4,7 @@ const qs = require('qs')
 
 const requestUrl = 'https://dm.aliyuncs.com/'
 
-module.exports = function (config, cb) {
+module.exports = function handlePostRequest(config, cb) {
   const nonce = Date.now()// 当前时间距离时间零点（1970年1月1日 00:00:00 UTC）的毫秒数
   const date = new Date()// 当前时间
   const errorMsg = []// 错误信息数组
